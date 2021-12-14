@@ -44,10 +44,9 @@ resource "google_compute_instance" "compute_vm" {
     lab-logs-bucket = "gs://${google_storage_bucket.bucket.name}"
   }
 
-  metadata_startup_script = file("startup_script.sh")
+  #metadata_startup_script = file("startup_script.sh")
 
   service_account {
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     email  = google_service_account.service_account.email
     scopes = ["storage-rw"]
   }
