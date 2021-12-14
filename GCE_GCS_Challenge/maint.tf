@@ -49,7 +49,7 @@ resource "google_compute_instance" "compute_vm" {
     lab-logs-bucket = "gs://${google_storage_bucket.bucket.name}"
   }
 
-  metadata_startup_script = file("short_startup_script.sh")
+  metadata_startup_script = file("startup_script.sh")
 
   service_account {
     email  = google_service_account.service_account.email
