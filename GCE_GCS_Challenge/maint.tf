@@ -5,9 +5,10 @@ provider "google" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  name     = "kfinn-gce-challenge"
-  location = "us-central1"
-  project  = "my-user-project-331814"
+  name          = "kfinn-gce-challenge"
+  location      = "us-central1"
+  project       = "my-user-project-331814"
+  force_destroy = true
 }
 
 resource "google_service_account" "service_account" {
@@ -38,13 +39,17 @@ resource "google_compute_instance" "compute_vm" {
 
   network_interface {
     network = "default"
+
+    access_config {
+      // Include this section to give the VM an external ip address
+    }
   }
 
   metadata = {
     lab-logs-bucket = "gs://${google_storage_bucket.bucket.name}"
   }
 
-  #metadata_startup_script = file("startup_script.sh")
+  metadata_startup_script = file("short_startup_script.sh")
 
   service_account {
     email  = google_service_account.service_account.email
