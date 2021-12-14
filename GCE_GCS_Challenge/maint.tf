@@ -34,8 +34,6 @@ resource "google_compute_instance" "compute_vm" {
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-10"
-      auto_delete =true
-      boot=true
     }
   }
 
