@@ -39,8 +39,8 @@ resource "google_compute_firewall" "b2b_ingress" {
     protocol = "icmp"
   }
 
-  target_service_accounts = [google_service_account.backend_service_account.name]
-  source_service_accounts = [google_service_account.backend_service_account.name]
+  target_service_accounts = [google_service_account.backend_service_account.email]
+  source_service_accounts = [google_service_account.backend_service_account.email]
 }
 
 resource "google_compute_firewall" "b2b_egress" {
@@ -52,7 +52,7 @@ resource "google_compute_firewall" "b2b_egress" {
     protocol = "icmp"
   }
 
-  target_service_accounts = [google_service_account.backend_service_account.name]
+  target_service_accounts = [google_service_account.backend_service_account.email]
   destination_ranges      = [google_compute_subnetwork.iowa_subnet.ip_cidr_range]
 }
 
@@ -65,7 +65,7 @@ resource "google_compute_firewall" "deny_backend_egress" {
     protocol = "icmp"
   }
 
-  target_service_accounts = [google_service_account.backend_service_account.name]
+  target_service_accounts = [google_service_account.backend_service_account.email]
   priority                = 65534
 }
 
@@ -78,8 +78,8 @@ resource "google_compute_firewall" "f2b_ingress" {
     protocol = "icmp"
   }
 
-  target_service_accounts = [google_service_account.backend_service_account.name]
-  source_service_accounts = [google_service_account.frontend_service_account.name]
+  target_service_accounts = [google_service_account.backend_service_account.email]
+  source_service_accounts = [google_service_account.frontend_service_account.email]
 }
 
 resource "google_compute_firewall" "allow_frontend_ingress" {
@@ -91,7 +91,7 @@ resource "google_compute_firewall" "allow_frontend_ingress" {
     protocol = "icmp"
   }
 
-  target_service_accounts = [google_service_account.frontend_service_account.name]
+  target_service_accounts = [google_service_account.frontend_service_account.email]
   source_ranges           = ["0.0.0.0/0"]
 }
 
