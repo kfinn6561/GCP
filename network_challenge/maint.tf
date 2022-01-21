@@ -19,14 +19,21 @@ resource "google_service_account" "frontend_service_account" {
 }
 
 resource "google_compute_network" "vpc_network" {
-  name = "vpc-network"
+  name                    = "vpc-network"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "iowa_subnet" {
   name          = "iowa-subnet"
-  ip_cidr_range = "192.168.10.0/24"
-  region        = var.gcp_region
+  ip_cidr_range = "192.168.0.0/24"
+  region        = "us-central1"
+  network       = google_compute_network.vpc_network.id
+}
+
+resource "google_compute_subnetwork" "oregon_subnet" {
+  name          = "iowa-subnet"
+  ip_cidr_range = "192.168.20.0/24"
+  region        = "us-west1"
   network       = google_compute_network.vpc_network.id
 }
 
@@ -124,7 +131,7 @@ resource "google_compute_instance_template" "frontend_template" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.iowa_subnet.name
+    subnetwork = google_compute_subnetwork.oregon_subnet.name
 
     access_config {
       // Include this section to give the VM an external ip address
@@ -139,7 +146,6 @@ resource "google_compute_instance_template" "frontend_template" {
 
   depends_on = [
     google_compute_network.vpc_network,
-    google_compute_subnetwork.iowa_subnet,
   ]
 }
 
@@ -172,21 +178,20 @@ resource "google_compute_instance_template" "backend_template" {
   }
   depends_on = [
     google_compute_network.vpc_network,
-    google_compute_subnetwork.iowa_subnet,
   ]
 }
 
 resource "google_compute_region_instance_group_manager" "backend_ig" {
   name               = "backend-ig"
   base_instance_name = "backend-vm"
-  region             = var.gcp_region
+  region             = google_compute_subnetwork.iowa_subnet.region
 
   version {
     name              = "backend-ig-version"
     instance_template = google_compute_instance_template.backend_template.id
   }
   lifecycle {
-    ignore_changes = [target_size,]
+    ignore_changes = [target_size, ]
   }
   depends_on = [
     google_compute_network.vpc_network,
@@ -209,24 +214,23 @@ resource "google_compute_region_autoscaler" "backend_autoscaler" {
       target = 0.5
     }
   }
-  
+
 }
 
 resource "google_compute_region_instance_group_manager" "frontend_ig" {
   name               = "frontend-ig"
   base_instance_name = "frontend-vm"
-  region             = var.gcp_region
+  region             = google_compute_subnetwork.oregon_subnet.region
 
   version {
     name              = "frontend-ig-version"
     instance_template = google_compute_instance_template.frontend_template.id
   }
   lifecycle {
-    ignore_changes = [target_size,]
+    ignore_changes = [target_size, ]
   }
   depends_on = [
     google_compute_network.vpc_network,
-    google_compute_subnetwork.iowa_subnet,
   ]
 }
 
