@@ -20,6 +20,7 @@ resource "google_service_account" "frontend_service_account" {
 
 resource "google_compute_network" "vpc_network" {
   name = "vpc-network"
+  auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "iowa_subnet" {
@@ -153,6 +154,10 @@ resource "google_compute_instance_template" "backend_template" {
 
   network_interface {
     subnetwork = google_compute_subnetwork.iowa_subnet.name
+
+    access_config {
+      // Include this section to give the VM an external ip address
+    }
   }
 
 
@@ -171,6 +176,9 @@ resource "google_compute_region_instance_group_manager" "backend_ig" {
     name              = "backend-ig-version"
     instance_template = google_compute_instance_template.backend_template.id
   }
+  lifecycle {
+    ignore_changes = [target_size,]
+  }
 }
 
 
@@ -188,6 +196,7 @@ resource "google_compute_region_autoscaler" "backend_autoscaler" {
       target = 0.5
     }
   }
+  
 }
 
 resource "google_compute_region_instance_group_manager" "frontend_ig" {
@@ -198,6 +207,9 @@ resource "google_compute_region_instance_group_manager" "frontend_ig" {
   version {
     name              = "frontend-ig-version"
     instance_template = google_compute_instance_template.frontend_template.id
+  }
+  lifecycle {
+    ignore_changes = [target_size,]
   }
 }
 
