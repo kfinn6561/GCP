@@ -123,7 +123,7 @@ resource "google_compute_instance_template" "frontend_template" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.iowa-subnet.name
+    subnetwork = google_compute_subnetwork.iowa_subnet.name
 
     access_config {
       // Include this section to give the VM an external ip address
@@ -135,7 +135,6 @@ resource "google_compute_instance_template" "frontend_template" {
     email  = google_service_account.frontend_service_account.email
     scopes = ["cloud-platform"]
   }
-  allow_stopping_for_update = true
 }
 
 resource "google_compute_instance_template" "backend_template" {
@@ -161,7 +160,6 @@ resource "google_compute_instance_template" "backend_template" {
     email  = google_service_account.backend_service_account.email
     scopes = ["cloud-platform"]
   }
-  allow_stopping_for_update = true
 }
 
 resource "google_compute_region_instance_group_manager" "backend_ig" {
