@@ -136,6 +136,11 @@ resource "google_compute_instance_template" "frontend_template" {
     email  = google_service_account.frontend_service_account.email
     scopes = ["cloud-platform"]
   }
+
+  depends_on = [
+    google_compute_network.vpc_network,
+    google_compute_subnetwork.iowa_subnet,
+  ]
 }
 
 resource "google_compute_instance_template" "backend_template" {
@@ -165,6 +170,10 @@ resource "google_compute_instance_template" "backend_template" {
     email  = google_service_account.backend_service_account.email
     scopes = ["cloud-platform"]
   }
+  depends_on = [
+    google_compute_network.vpc_network,
+    google_compute_subnetwork.iowa_subnet,
+  ]
 }
 
 resource "google_compute_region_instance_group_manager" "backend_ig" {
@@ -179,6 +188,10 @@ resource "google_compute_region_instance_group_manager" "backend_ig" {
   lifecycle {
     ignore_changes = [target_size,]
   }
+  depends_on = [
+    google_compute_network.vpc_network,
+    google_compute_subnetwork.iowa_subnet,
+  ]
 }
 
 
@@ -211,6 +224,10 @@ resource "google_compute_region_instance_group_manager" "frontend_ig" {
   lifecycle {
     ignore_changes = [target_size,]
   }
+  depends_on = [
+    google_compute_network.vpc_network,
+    google_compute_subnetwork.iowa_subnet,
+  ]
 }
 
 
