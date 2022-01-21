@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = file("C:/Users/kiera/GCP_credentials/network-challenge-terraform-sa.json")
+  credentials = file("C:/Users/kieran.finn/Documents/gcp_keys/network-challenge-terraform-sa.json")
   project     = var.gcp_project
   region      = var.gcp_region
   zone        = var.gcp_zone
