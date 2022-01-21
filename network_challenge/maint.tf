@@ -63,30 +63,42 @@ resource "google_compute_firewall" "b2b_egress" {
   destination_ranges      = [google_compute_subnetwork.iowa_subnet.ip_cidr_range]
 }
 
-resource "google_compute_firewall" "deny_all_egress" {
-  name      = "deny-all-egress"
+resource "google_compute_firewall" "deny_backend_egress" {
+  name      = "deny-backend-egress"
   network   = google_compute_network.vpc_network.name
   direction = "EGRESS"
 
   deny {
     protocol = "icmp"
   }
-
+  target_service_accounts = [google_service_account.backend_service_account.email]
   priority                = 65534
 }
 
-resource "google_compute_firewall" "allow_frontend_egress" {
-  name      = "allow-frontend-egress"
-  network   = google_compute_network.vpc_network.name
-  direction = "EGRESS"
+# resource "google_compute_firewall" "deny_all_egress" {
+#   name      = "deny-all-egress"
+#   network   = google_compute_network.vpc_network.name
+#   direction = "EGRESS"
 
-  allow {
-    protocol = "icmp"
-  }
+#   deny {
+#     protocol = "icmp"
+#   }
 
-  target_service_accounts = [google_service_account.frontend_service_account.email]
-  priority                = 1100
-}
+#   priority                = 65534
+# }
+
+# resource "google_compute_firewall" "allow_frontend_egress" {
+#   name      = "allow-frontend-egress"
+#   network   = google_compute_network.vpc_network.name
+#   direction = "EGRESS"
+
+#   allow {
+#     protocol = "icmp"
+#   }
+
+#   target_service_accounts = [google_service_account.frontend_service_account.email]
+#   priority                = 1100
+# }
 
 resource "google_compute_firewall" "f2b_ingress" {
   name      = "f2b-ingress"
@@ -131,7 +143,7 @@ resource "google_compute_firewall" "allow_ssh" {
 resource "google_compute_instance_template" "frontend_template" {
   name        = "frontend-template"
   description = "template for the frontend"
-  region = google_compute_subnetwork.oregon_subnet.region
+  region      = google_compute_subnetwork.oregon_subnet.region
 
   machine_type = "e2-micro"
 
@@ -165,7 +177,7 @@ resource "google_compute_instance_template" "frontend_template" {
 resource "google_compute_instance_template" "backend_template" {
   name        = "backend-template"
   description = "template for the backend"
-  region = google_compute_subnetwork.iowa_subnet.region
+  region      = google_compute_subnetwork.iowa_subnet.region
 
   machine_type = "e2-micro"
 
@@ -216,7 +228,7 @@ resource "google_compute_region_instance_group_manager" "backend_ig" {
 
 resource "google_compute_region_autoscaler" "backend_autoscaler" {
   name   = "backend-autoscaler"
-  region  = google_compute_subnetwork.iowa_subnet.region
+  region = google_compute_subnetwork.iowa_subnet.region
   target = google_compute_region_instance_group_manager.backend_ig.id
 
   autoscaling_policy {
