@@ -31,7 +31,7 @@ resource "google_compute_subnetwork" "iowa_subnet" {
 }
 
 resource "google_compute_subnetwork" "oregon_subnet" {
-  name          = "iowa-subnet"
+  name          = "oregon-subnet"
   ip_cidr_range = "192.168.20.0/24"
   region        = "us-west1"
   network       = google_compute_network.vpc_network.id
@@ -228,12 +228,10 @@ resource "google_compute_region_instance_group_manager" "backend_ig" {
     name              = "backend-ig-version"
     instance_template = google_compute_instance_template.backend_template.id
   }
-  lifecycle {
-    ignore_changes = [target_size, ]
-  }
   depends_on = [
     google_compute_network.vpc_network,
     google_compute_subnetwork.iowa_subnet,
+    google_compute_instance_template.backend_template,
   ]
 }
 
@@ -264,11 +262,10 @@ resource "google_compute_region_instance_group_manager" "frontend_ig" {
     name              = "frontend-ig-version"
     instance_template = google_compute_instance_template.frontend_template.id
   }
-  lifecycle {
-    ignore_changes = [target_size, ]
-  }
   depends_on = [
     google_compute_network.vpc_network,
+    google_compute_subnetwork.oregon_subnet,
+    google_compute_instance_template.frontend_template,
   ]
 }
 
