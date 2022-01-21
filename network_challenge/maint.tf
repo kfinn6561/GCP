@@ -65,7 +65,7 @@ resource "google_compute_firewall" "deny_backend_egress" {
   }
 
   target_service_accounts = [google_service_account.backend_service_account.name]
-  priority = 65534
+  priority                = 65534
 }
 
 resource "google_compute_firewall" "f2b_ingress" {
@@ -91,7 +91,7 @@ resource "google_compute_firewall" "allow_frontend_ingress" {
   }
 
   target_service_accounts = [google_service_account.frontend_service_account.name]
-  source_ranges = [ "0.0.0.0/0" ]
+  source_ranges           = ["0.0.0.0/0"]
 }
 
 resource "google_compute_firewall" "allow_ssh" {
@@ -101,11 +101,11 @@ resource "google_compute_firewall" "allow_ssh" {
 
   allow {
     protocol = "tcp"
-    ports = [ "22" ]
+    ports    = ["22"]
   }
 
-  target_tags = [ "open-ssh" ]
-  source_ranges = [ "0.0.0.0/0" ]
+  target_tags   = ["open-ssh"]
+  source_ranges = ["0.0.0.0/0"]
 }
 
 resource "google_compute_instance_template" "frontend_template" {
@@ -165,12 +165,12 @@ resource "google_compute_instance_template" "backend_template" {
 }
 
 resource "google_compute_region_instance_group_manager" "backend_ig" {
-  name = "backend-ig"
+  name               = "backend-ig"
   base_instance_name = "backend-vm"
-  region = var.gcp_region
+  region             = var.gcp_region
 
   version {
-    name = "backend-ig-version"
+    name              = "backend-ig-version"
     instance_template = google_compute_instance_template.backend_template.id
   }
 }
@@ -178,7 +178,7 @@ resource "google_compute_region_instance_group_manager" "backend_ig" {
 
 resource "google_compute_region_autoscaler" "backend_autoscaler" {
   name   = "backend-autoscaler"
-  region   = var.gcp_region
+  region = var.gcp_region
   target = google_compute_region_instance_group_manager.backend_ig.id
 
   autoscaling_policy {
@@ -193,12 +193,12 @@ resource "google_compute_region_autoscaler" "backend_autoscaler" {
 }
 
 resource "google_compute_region_instance_group_manager" "frontend_ig" {
-  name = "frontend-ig"
+  name               = "frontend-ig"
   base_instance_name = "frontend-vm"
-  region = var.gcp_region
+  region             = var.gcp_region
 
   version {
-    name = "frontend-ig-version"
+    name              = "frontend-ig-version"
     instance_template = google_compute_instance_template.frontend_template.id
   }
 }
@@ -206,7 +206,7 @@ resource "google_compute_region_instance_group_manager" "frontend_ig" {
 
 resource "google_compute_region_autoscaler" "frontend_autoscaler" {
   name   = "frontend-autoscaler"
-  region   = var.gcp_region
+  region = var.gcp_region
   target = google_compute_region_instance_group_manager.frontend_ig.id
 
   autoscaling_policy {
