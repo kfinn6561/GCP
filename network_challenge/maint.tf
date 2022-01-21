@@ -75,6 +75,18 @@ resource "google_compute_firewall" "deny_backend_egress" {
   priority                = 65534
 }
 
+resource "google_compute_firewall" "deny_backend_ingress" {
+  name      = "deny-backend-ingress"
+  network   = google_compute_network.vpc_network.name
+  direction = "INGRESS"
+
+  deny {
+    protocol = "icmp"
+  }
+  source_service_accounts = [google_service_account.backend_service_account.email]
+  priority                = 5000
+}
+
 # resource "google_compute_firewall" "deny_all_egress" {
 #   name      = "deny-all-egress"
 #   network   = google_compute_network.vpc_network.name
