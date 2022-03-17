@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kv-store
+  labels:
+    customer: acg
+spec:
+  selector:
+    matchLabels:
+      app: web
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/kv-store-344415/kv-store-repo/kv-store:latest
+        name: kv-store
+        ports:
+        - containerPort: 80
